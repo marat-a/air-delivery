@@ -23,9 +23,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     @Override
-    public void parseOrders(String source) throws IOException {
+    public List<Order> parseOrders(String source) throws IOException {
         ExcelOrdersParser excelOrdersParser = new ExcelOrdersParser();
-        orderRepository.saveAll(excelOrdersParser.parseOrdersFromXlsx(source));
+        return orderRepository.saveAll(excelOrdersParser.parseOrdersFromXlsx(source));
     }
 
     @Override

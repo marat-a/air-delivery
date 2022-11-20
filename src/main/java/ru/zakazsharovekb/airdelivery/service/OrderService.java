@@ -1,6 +1,7 @@
 package ru.zakazsharovekb.airdelivery.service;
 
 
+import ru.zakazsharovekb.airdelivery.model.Order;
 import ru.zakazsharovekb.airdelivery.model.dto.NewOrderDto;
 import ru.zakazsharovekb.airdelivery.model.dto.OrderDto;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface OrderService {
 
-    void parseOrders(String source) throws IOException;
+    List<Order> parseOrders(String source) throws IOException;
 
     OrderDto createOrder(NewOrderDto orderDto);
 

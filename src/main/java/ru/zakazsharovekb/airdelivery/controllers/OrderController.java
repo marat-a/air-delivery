@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.zakazsharovekb.airdelivery.model.Order;
 import ru.zakazsharovekb.airdelivery.model.dto.NewOrderDto;
 import ru.zakazsharovekb.airdelivery.model.dto.OrderDto;
 import ru.zakazsharovekb.airdelivery.service.OrderService;
@@ -21,8 +22,8 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/parse")
-    public void parseOrders() throws IOException {
-       orderService.parseOrders("orders.xlsx");
+    public List<Order> parseOrders() throws IOException {
+       return orderService.parseOrders("orders.xlsx");
     }
 
     @PostMapping
@@ -31,9 +32,29 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public OrderDto getBookById (@PathVariable Long id){
+    public OrderDto getOrderById (@PathVariable Long id){
         return orderService.getOrderById(id);
     }
+
+//    public List<Order> getOrdersWithFilter(@RequestParam(required = false) String text,
+//                                                 @RequestParam(required = false) Integer[] categories,
+//                                                 @RequestParam(required = false) Boolean paid,
+//                                                 @RequestParam(required = false) Boolean onlyAvailable,
+//                                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//                                                 @RequestParam(required = false) String rangeStart,
+//                                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//                                                 @RequestParam(required = false) String rangeEnd,
+//                                                 @RequestParam(required = false)
+//                                                 @SortTypeSubset(anyOf = {
+//                                                         SortType.VIEWS,
+//                                                         SortType.EVENT_DATE,
+//                                                         SortType.DISTANCE}) SortType sort,
+//                                                 @RequestParam(required = false, defaultValue = "0") int from,
+//                                                 @RequestParam(required = false, defaultValue = "10") int size,
+//                                                 @RequestParam(required = false) Double lon,
+//                                                 @RequestParam(required = false) Double lat,
+//                                                 @RequestParam(required = false, defaultValue = "0") Double distance,
+//                                                 HttpServletRequest request)
 
     @GetMapping
     public List<OrderDto> getAllOrders (){
