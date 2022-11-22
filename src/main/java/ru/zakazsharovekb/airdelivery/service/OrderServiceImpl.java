@@ -69,10 +69,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDto getOrderById(Long id) {
-        Order order = orderRepository
+    public Order getOrderById(Long id) {
+        return orderRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Order not found: id = " + id));
-        return mapper.orderToDto(order);
+//        return mapper.orderToDto(order);
     }
 }

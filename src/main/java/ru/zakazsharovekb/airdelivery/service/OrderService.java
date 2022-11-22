@@ -20,5 +20,5 @@ public interface OrderService {
 
     List<OrderDto> getAllOrders();
 
-    OrderDto getOrderById(Long id);
+    Order getOrderById(Long id);
 }

@@ -2,6 +2,7 @@ package ru.zakazsharovekb.airdelivery.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.zakazsharovekb.airdelivery.model.Order;
@@ -31,8 +32,9 @@ public class OrderController {
         return orderService.createOrder(orderDto);
     }
 
-    @GetMapping("/{id}")
-    public OrderDto getOrderById (@PathVariable Long id){
+    @CrossOrigin
+    @GetMapping(value = "/{id}", produces = "application/json; charset=utf-8")
+    public Order getOrderById (@PathVariable Long id){
         return orderService.getOrderById(id);
     }
 
