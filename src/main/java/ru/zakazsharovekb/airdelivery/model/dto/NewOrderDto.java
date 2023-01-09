@@ -1,33 +1,38 @@
 package ru.zakazsharovekb.airdelivery.model.dto;
 
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.validation.annotation.Validated;
+import lombok.Setter;
+import ru.zakazsharovekb.airdelivery.common.enums.OrderStatus;
 import ru.zakazsharovekb.airdelivery.common.enums.PayStatus;
 import ru.zakazsharovekb.airdelivery.common.enums.ReceivingType;
 import ru.zakazsharovekb.airdelivery.common.enums.TransferType;
+import ru.zakazsharovekb.airdelivery.model.Customer;
 import ru.zakazsharovekb.airdelivery.model.Delivery;
-import ru.zakazsharovekb.airdelivery.model.OrderProduct;
 
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Embedded;
+import java.time.LocalDateTime;
 
 @Getter
-@Validated
+@Setter
 public class NewOrderDto {
 
-    @NotNull
-    private List<OrderProduct> orderProducts = new ArrayList<>();
-    @NotNull
+    @Embedded
+    private Customer customer;
+
+    private LocalDateTime dateCreated;
+
     private TransferType transferType;
-    @NotNull
+
+    @Embedded
     private Delivery delivery;
 
-    private String comment;
+    private OrderStatus status;
 
-    @Value("NOTPAID")
+    private String orderComment;
+
     private PayStatus payStatus;
 
     private ReceivingType receivingType;
+
+    private double sum;
 }

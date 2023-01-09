@@ -24,7 +24,7 @@ public class OrderController {
 
     @PostMapping("/parse")
     public List<Order> parseOrders() throws IOException {
-       return orderService.parseOrders("orders.xlsx");
+       return orderService.parseOrders();
     }
 
     @PostMapping
@@ -34,7 +34,7 @@ public class OrderController {
 
     @CrossOrigin
     @GetMapping(value = "/{id}", produces = "application/json; charset=utf-8")
-    public Order getOrderById (@PathVariable Long id){
+    public OrderDto getOrderById (@PathVariable Long id){
         return orderService.getOrderById(id);
     }
 
@@ -57,9 +57,9 @@ public class OrderController {
 //                                                 @RequestParam(required = false) Double lat,
 //                                                 @RequestParam(required = false, defaultValue = "0") Double distance,
 //                                                 HttpServletRequest request)
-
-    @GetMapping
-    public List<OrderDto> getAllOrders (){
+@CrossOrigin
+    @GetMapping(produces = "application/json; charset=utf-8")
+    public List<Order> getAllOrders (){
         return orderService.getAllOrders();
     }
 

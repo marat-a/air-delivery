@@ -3,13 +3,16 @@ package ru.zakazsharovekb.airdelivery.service;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.zakazsharovekb.airdelivery.common.Exceptions.NotFoundException;
 import ru.zakazsharovekb.airdelivery.common.enums.OrderStatus;
 import ru.zakazsharovekb.airdelivery.model.Order;
 import ru.zakazsharovekb.airdelivery.model.OrderMapper;
 import ru.zakazsharovekb.airdelivery.model.dto.NewOrderDto;
 import ru.zakazsharovekb.airdelivery.model.dto.OrderDto;
+import ru.zakazsharovekb.airdelivery.model.dto.UpdateOrderDto;
 import ru.zakazsharovekb.airdelivery.repository.OrderRepository;
+import ru.zakazsharovekb.airdelivery.service.parser.ExcelOrdersParser;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -23,9 +26,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<Order> parseOrders(String source) throws IOException {
+    public List<Order> parseOrders() throws IOException {
         ExcelOrdersParser excelOrdersParser = new ExcelOrdersParser();
-        return orderRepository.saveAll(excelOrdersParser.parseOrdersFromXlsx(source));
+        return orderRepository.saveAll(excelOrdersParser.parseOrdersFromXlsx());
     }
 
     @Override
@@ -38,41 +41,52 @@ public class OrderServiceImpl implements OrderService {
         return mapper.orderToDto(order);
     }
 
-//    @Override
-//    @Transactional
-//    public OrderDto updateOrder(OrderDto orderDto) {
-//        Order order = mapper.orderDtoToOrder(orderDto);
-//        orderRepository.findById(order.getId()) // returns Optional<User>
-//                .ifPresent(orderFromDb -> {
-//                    orderFromDb.setAddress(order.getAddress());
-//                    orderFromDb.setCustomerPhone(order.);
-//                    orderFromDb.setDeliveryType(order.getDeliveryType());
-//                    orderFromDb.setStatus(order.getStatus());
-//                    orderFromDb.setOrderProducts(order.getOrderProducts());
-//                    orderFromDb.setComment(order.getComment());
-//                    orderFromDb.setPayStatus(order.getPayStatus());
-//                    orderFromDb.setReceivingType(order.getReceivingType());
-//                    orderRepository.save(orderNew);
-//                });
-//    }
-//
+    @Override
+    @Transactional
+    public OrderDto updateOrder(UpdateOrderDto update) {
+
+        Order editedOrder = orderRepository.findById(update.getId())
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+        if (update.getDelivery().getDeliveryTime().getStartTime() != null) {
+            editedOrder
+                    .getDelivery()
+                    .getDeliveryTime()
+                    .setStartTime(update
+                            .getDelivery()
+                            .getDeliveryTime()
+                            .getStartTime());
+        }
+        if (update.getDelivery().getDeliveryTime().getEndTime() != null) {
+            editedOrder
+                    .getDelivery()
+                    .getDeliveryTime()
+                    .setEndTime(update
+                            .getDelivery()
+                            .getDeliveryTime()
+                            .getEndTime());
+
+        }
+        return mapper.orderToDto(orderRepository.save(editedOrder));
+    }
+
 
     @Override
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
     }
 
+
+
     @Override
-    public List<OrderDto> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        return mapper.orderToDtoList(orders);
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 
     @Override
-    public Order getOrderById(Long id) {
-        return orderRepository
+    public OrderDto getOrderById(Long id) {
+        Order order =  orderRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Order not found: id = " + id));
-//        return mapper.orderToDto(order);
+       return mapper.orderToDto(order);
     }
 }

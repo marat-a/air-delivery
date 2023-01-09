@@ -1,15 +1,14 @@
-package ru.zakazsharovekb.airdelivery.service;
+package ru.zakazsharovekb.airdelivery.service.parser;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import ru.zakazsharovekb.airdelivery.common.enums.OrderStatus;
 import ru.zakazsharovekb.airdelivery.common.enums.TransferType;
 import ru.zakazsharovekb.airdelivery.model.DeliveryTime;
 import ru.zakazsharovekb.airdelivery.model.Order;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +17,13 @@ public class ExcelOrdersParser {
     public ExcelOrdersParser() {
     }
 
-    public List<Order> parseOrdersFromXlsx(String uri) throws IOException {
-        FileInputStream file = new FileInputStream(getFileFromResourcesFolder(uri));
-        Workbook workbook = new XSSFWorkbook(file);
+    public List<Order> parseOrdersFromXlsx() throws IOException {
+
+        InputStream inputStream = null;
+        inputStream = YandexDiskDownload.getFilefromYandexDisk();
+        Workbook workbook = new XSSFWorkbook(inputStream);
         List<Order> orders = new ArrayList<>();
+//        Sheet sheet = workbook.getSheet("Январь 2023");
         for (Sheet sheet : workbook) {
             for (Row row : sheet) {
                 if (row.getCell(1) != null && isRowNotEmpty(row)) {
@@ -36,7 +38,7 @@ public class ExcelOrdersParser {
     }
 
     private boolean isRowNotEmpty(Row row) {
-        return extractStringFromCell(row.getCell(1)) != null
+        return !extractStringFromCell(row.getCell(1)).isBlank()
                 && (
                 !row.getCell(2).getStringCellValue().isBlank()
                         || !row.getCell(3).getStringCellValue().isBlank()
@@ -44,14 +46,6 @@ public class ExcelOrdersParser {
                         || !row.getCell(5).getStringCellValue().isBlank()
                         || !row.getCell(6).getStringCellValue().isBlank()
         );
-    }
-
-    private File getFileFromResourcesFolder(String fileName) {
-        ClassLoader classLoader = ExcelOrdersParser.class.getClassLoader();
-        URL resource = classLoader.getResource(fileName);
-        if (resource == null) {
-            throw new IllegalArgumentException("File not found!");
-        } else return new File(resource.getFile());
     }
 
     private Order extractOrderFromRow(Row row) {
@@ -63,8 +57,9 @@ public class ExcelOrdersParser {
         order.getDelivery().setAddress((dataFormatter.formatCellValue(row.getCell(3))));
         order.getCustomer().setPhone(formatPhone(dataFormatter.formatCellValue(row.getCell(5))));
         order.setTransferType(parseTransferType(row.getCell(3)));
+        order.setStatus(OrderStatus.DELIVERED);
         order.getDelivery().setComment(row.getCell(6) == null ? "" : dataFormatter.formatCellValue(row.getCell(6)));
-        System.out.println(order.getDelivery().getAddress()+" "+ order.getCustomer().getPhone());
+        System.out.println(order.getDelivery().getAddress() + " " + order.getCustomer().getPhone());
         return order;
     }
 
@@ -77,7 +72,7 @@ public class ExcelOrdersParser {
 
     private Double extractDoubleFromCell(Cell cell) {
         return switch (cell.getCellType()) {
-            case STRING -> Double.parseDouble(cell.getStringCellValue());
+            case STRING -> Double.parseDouble(cell.getStringCellValue().isBlank() ? "0" : cell.getStringCellValue());
             case NUMERIC -> cell.getNumericCellValue();
             default -> 0.0;
         };
@@ -87,9 +82,8 @@ public class ExcelOrdersParser {
         return switch (cell.getCellType()) {
             case STRING -> cell.getStringCellValue();
             case NUMERIC -> Double.toString(cell.getNumericCellValue());
-            default -> null;
+            default -> "";
         };
-
     }
 
     private TransferType parseTransferType(Cell addressCell) {
@@ -115,13 +109,13 @@ public class ExcelOrdersParser {
             return deliveryTime;
         }
 
-
         if (timeCellValue.matches(after + ".*\\d+.*")) {
             LocalTime startTime = extractHoursAndMinutes(timeCellValue, after);
             deliveryTime.setStartTime(LocalDateTime.of(date, startTime));
             deliveryTime.setEndTime(LocalDateTime.of(date, LocalTime.MAX));
             return deliveryTime;
         }
+
         if (timeCellValue.matches(".*\\d+.*" + before + ".*\\d+.*")) {
             String[] twoValues = timeCellValue.split("до");
             if (twoValues.length == 2) {
@@ -150,7 +144,8 @@ public class ExcelOrdersParser {
             }
             return deliveryTime;
         }
-        if (timeCellValue.isBlank() || (deliveryTime.getStartTime() == null && deliveryTime.getEndTime() == null)) {
+
+        if (timeCellValue.replaceAll("[А-Яа-яA-Za-z]", "").trim().isBlank() || (deliveryTime.getStartTime() == null && deliveryTime.getEndTime() == null)) {
             deliveryTime.setStartTime(LocalDateTime.of(date, LocalTime.MIN));
             deliveryTime.setEndTime(LocalDateTime.of(date, LocalTime.MAX));
         }
@@ -178,7 +173,6 @@ public class ExcelOrdersParser {
             if (hours.isBlank() || hours.length() > 2) {
                 throw new IllegalArgumentException("Hours not parsed");
             }
-
         } else throw new IllegalArgumentException("Hours not parsed");
 
         if (splittedStringArray.length >= 2) {
@@ -187,9 +181,11 @@ public class ExcelOrdersParser {
                 minutes = "00";
             }
         }
+
         if (hours.equals("24") && minutes.equals("00")) {
             return LocalTime.of(23, 59);
         }
+
         hoursAndMinutes = LocalTime.of(Integer.parseInt(hours), Integer.parseInt(minutes));
         return hoursAndMinutes;
     }

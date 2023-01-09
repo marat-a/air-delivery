@@ -2,8 +2,6 @@ package ru.zakazsharovekb.airdelivery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import ru.zakazsharovekb.airdelivery.service.ExcelOrdersParser;
-import ru.zakazsharovekb.airdelivery.service.OrderService;
 
 import java.io.IOException;
 
