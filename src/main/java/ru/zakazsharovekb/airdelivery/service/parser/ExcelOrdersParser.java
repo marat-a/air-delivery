@@ -19,12 +19,12 @@ public class ExcelOrdersParser {
 
     public List<Order> parseOrdersFromXlsx() throws IOException {
 
-        InputStream inputStream = null;
+        InputStream inputStream;
         inputStream = YandexDiskDownload.getFilefromYandexDisk();
         Workbook workbook = new XSSFWorkbook(inputStream);
         List<Order> orders = new ArrayList<>();
-//        Sheet sheet = workbook.getSheet("Январь 2023");
-        for (Sheet sheet : workbook) {
+        Sheet sheet = workbook.getSheet("Январь 2023");
+
             for (Row row : sheet) {
                 if (row.getCell(1) != null && isRowNotEmpty(row)) {
                     Order order = extractOrderFromRow(row);
@@ -32,7 +32,7 @@ public class ExcelOrdersParser {
                     orders.add(order);
                 }
             }
-        }
+
 
         return orders;
     }

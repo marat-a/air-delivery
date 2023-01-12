@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'order.dart';
+import 'model/order.dart';
 
 class DetailScreen extends StatelessWidget {
   const DetailScreen({super.key, required this.order});
 
   final Order order;
 
-  IconData _getTransferIcon(String transferType) {
+  IconData _getTransferIcon(String? transferType) {
     if (transferType == "DELIVERY") {
       return Icons.delivery_dining;
     }

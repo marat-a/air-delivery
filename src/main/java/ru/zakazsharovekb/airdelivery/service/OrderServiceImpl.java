@@ -28,6 +28,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> parseOrders() throws IOException {
         ExcelOrdersParser excelOrdersParser = new ExcelOrdersParser();
+        orderRepository.deleteAll();
         return orderRepository.saveAll(excelOrdersParser.parseOrdersFromXlsx());
     }
 

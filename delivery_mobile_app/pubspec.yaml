@@ -1,5 +1,5 @@
 name: delivery_mobile_app
-description: Mobile App for deliveryman
+description: Mobile App for Delivery Service
 
 version: 1.0.0+1
 
@@ -11,13 +11,17 @@ dependencies:
     sdk: flutter
   http:
   intl:
-  url_launcher:
+  url_launcher: ^6.1.7
   cupertino_icons: ^1.0.2
+  json_annotation: ^4.7.0
+  mvc_pattern: ^7.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.0.0
+  json_serializable: ^6.0.0
 
 flutter:
   uses-material-design: true

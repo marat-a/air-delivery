@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'DetailScreen.dart';
-import 'order.dart';
+import 'detailScreen.dart';
+import 'model/order.dart';
 
 class Cards extends StatelessWidget {
   final Order order;
@@ -30,15 +30,24 @@ class Cards extends StatelessWidget {
                   child: Row(
                     children: [
                       Column(children: [
-                        Text(DateFormat('dd MMM').format(startTime), style: textTheme.bodyText1),
+                        Text(DateFormat('dd MMM').format(startTime),
+                            style: textTheme.bodyText1),
                         const VerticalDivider(
                           color: Colors.grey,
                           width: 5,
                         ),
-                        Text("${DateFormat('Hm').format(startTime)} - ${DateFormat('Hm').format(endTime)}", style: textTheme.bodyText1),
+                        Text(
+                            "${DateFormat('Hm').format(startTime)} - ${DateFormat('Hm').format(endTime)}",
+                            style: textTheme.bodyText1),
                       ]),
                       const SizedBox(width: 25.0),
-                      Text(address, style: textTheme.bodyText1, softWrap: true, maxLines: 2, overflow: TextOverflow.clip,)
+                      Text(
+                        address,
+                        style: textTheme.bodyText1,
+                        softWrap: true,
+                        maxLines: 2,
+                        overflow: TextOverflow.clip,
+                      )
                     ],
                   ),
                 ),

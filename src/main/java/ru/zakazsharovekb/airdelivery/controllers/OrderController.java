@@ -17,18 +17,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/order")
 @AllArgsConstructor
-@Validated
 public class OrderController {
 
     private OrderService orderService;
 
-    @PostMapping("/parse")
+    @CrossOrigin
+    @PostMapping(value = "/parse", produces = "application/json; charset=utf-8")
     public List<Order> parseOrders() throws IOException {
        return orderService.parseOrders();
     }
 
+    @CrossOrigin
     @PostMapping
     public OrderDto addOrder( @RequestBody NewOrderDto orderDto){
+        System.out.println("POST");
         return orderService.createOrder(orderDto);
     }
 
