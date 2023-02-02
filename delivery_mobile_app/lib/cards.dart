@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'detailScreen.dart';
+import 'detailScreenPage.dart';
 import 'model/order.dart';
 
 class Cards extends StatelessWidget {
@@ -14,55 +14,48 @@ class Cards extends StatelessWidget {
     final DateTime startTime = order.delivery.deliveryTime.startTime;
     final DateTime endTime = order.delivery.deliveryTime.endTime;
     final String address = order.delivery.address;
-    final textTheme = Theme.of(context)
-        .textTheme
-        .apply(displayColor: Theme.of(context).colorScheme.onSurface);
+
+    String printBeforeIfTimeIsMidnight (DateTime startTime) {
+      if (startTime.hour == 0  && startTime.minute == 0) {
+        return "до";
+      } else {
+        return  "${DateFormat('Hm').format(startTime)} -";
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Wrap(
-        alignment: WrapAlignment.spaceEvenly,
-        children: [
-          SizedBox(
-            child: InkWell(
-              child: Card(
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Column(children: [
-                        Text(DateFormat('dd MMM').format(startTime),
-                            style: textTheme.bodyText1),
-                        const VerticalDivider(
-                          color: Colors.grey,
-                          width: 5,
-                        ),
-                        Text(
-                            "${DateFormat('Hm').format(startTime)} - ${DateFormat('Hm').format(endTime)}",
-                            style: textTheme.bodyText1),
-                      ]),
-                      const SizedBox(width: 25.0),
-                      Text(
-                        address,
-                        style: textTheme.bodyText1,
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.clip,
-                      )
-                    ],
+      child: InkWell(
+        child: Card(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            child: Row(
+              children: [
+                Column(children: [
+                  Text(
+                      DateFormat('dd MMM').format(startTime)
                   ),
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailScreen(order: order),
+                  Text(
+                    "${printBeforeIfTimeIsMidnight(startTime)} ${DateFormat('Hm').format(endTime)}",
                   ),
-                );
-              },
+                ]),
+                const SizedBox(width: 25.0),
+                Expanded(
+                    child: Text(
+                  address,
+                ))
+              ],
             ),
           ),
-        ],
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailScreenPage(order: order),
+            ),
+          );
+        },
       ),
     );
   }

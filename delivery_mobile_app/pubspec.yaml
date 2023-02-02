@@ -10,7 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   http:
-  intl:
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.17.0
+  flutter_datetime_picker: ^1.5.1
+  font_awesome_flutter: ^10.3.0
   url_launcher: ^6.1.7
   cupertino_icons: ^1.0.2
   json_annotation: ^4.7.0

@@ -6,6 +6,7 @@ import 'orderRepository.dart';
 
 class OrderController extends ControllerMVC {
   final Repository repo = Repository();
+  late Order orderForUpdate;
 
   // конструктор нашего контроллера
   OrderController();
@@ -28,6 +29,15 @@ class OrderController extends ControllerMVC {
       callback(result);
     } catch (error) {
       callback(OrderAddFailure());
+    }
+  }
+
+  void editOrder(Order order, void Function(OrderUpdate) callback) async {
+    try {
+      final result = await repo.updateOrder(order);
+      callback(result);
+    } catch (error) {
+      callback(OrderUpdateFailure());
     }
   }
 

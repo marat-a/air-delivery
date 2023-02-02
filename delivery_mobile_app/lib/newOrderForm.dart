@@ -1,6 +1,9 @@
 import 'package:delivery_mobile_app/model/customer.dart';
 import 'package:delivery_mobile_app/model/delivery.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 import 'model/order.dart';
@@ -14,29 +17,30 @@ class NewOrderFormPage extends StatefulWidget {
 }
 
 class NewOrderFormPageState extends StateMVC {
-  DateTime selectedDate = DateTime.now();
+  DateTime _selectedStartTime = DateTime.now();
+  DateTime _selectedEndTime = DateTime.now();
   OrderController? _controller;
+  String _transferType = "DELIVERY";
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting();
+  }
 
   NewOrderFormPageState() : super(OrderController()) {
     _controller = controller as OrderController;
   }
 
-  final TextEditingController nameController =
-      TextEditingController(text: "Виталик");
-  final TextEditingController phoneController =
-      TextEditingController(text: "89122341594");
-  final TextEditingController emailController =
-      TextEditingController(text: "email@ya.ru");
-  final TextEditingController orderCommentController =
-      TextEditingController(text: "Комментарий к заказу");
-  final TextEditingController commentController =
-      TextEditingController(text: "Комментарий для курьера");
-  final TextEditingController addressController =
-      TextEditingController(text: "40-летия Комсомола 18Д");
-  final TextEditingController costController =
-      TextEditingController(text: "2580.22");
-  final TextEditingController sumController =
-      TextEditingController(text: "250");
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController transferTypeController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController orderCommentController = TextEditingController();
+  final TextEditingController commentController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController costController = TextEditingController();
+  final TextEditingController sumController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -55,9 +59,11 @@ class NewOrderFormPageState extends StateMVC {
                       name: nameController.text,
                       phone: phoneController.text,
                       email: emailController.text),
+                  transferType: _transferType.toString(),
                   delivery: Delivery(
                       deliveryTime: DeliveryTime(
-                          startTime: selectedDate, endTime: selectedDate),
+                          startTime: _selectedStartTime,
+                          endTime: _selectedEndTime),
                       comment: commentController.text,
                       address: addressController.text,
                       cost: double.parse(costController.text)),
@@ -78,47 +84,93 @@ class NewOrderFormPageState extends StateMVC {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(10),
         child: _buildContent(),
       ),
     );
   }
 
   Widget _buildContent() {
-    return Form(
+    return SingleChildScrollView(
+        child: Form(
       key: _formKey,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          TextFormField(
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.face),
-                hintText: "Name"),
-            controller: nameController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Заголовок пустой";
-              }
-              if (value.length < 3) {
-                return "Заголовок должен быть не короче 3 символов";
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 10),
-          TextFormField(
-            textAlignVertical: TextAlignVertical.top,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Phone",
+          Row(children: [
+            Expanded(
+              child: TextFormField(
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.face),
+                    hintText: "Имя"),
+                controller: nameController,
+              ),
             ),
-            controller: phoneController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Содержание пустое";
-              }
-              return null;
-            },
+            const VerticalDivider(
+              color: Colors.black,
+              thickness: 1,
+            ),
+            Expanded(
+              child: TextFormField(
+                textAlignVertical: TextAlignVertical.top,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone),
+                  hintText: "Телефон",
+                ),
+                controller: phoneController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return null;
+                  }
+                  const pattern =
+                      r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$';
+                  final regExp = RegExp(pattern);
+
+                  if (!regExp.hasMatch(value)) {
+                    return "Неправильный формат телефона";
+                  }
+                  return null;
+                },
+              ),
+            )
+          ]),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'Вид доставки:',
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              ),
+              Expanded(
+                child: RadioListTile(
+                  title: const Text('Доставка'),
+                  value: "DELIVERY",
+                  groupValue: _transferType,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _transferType = value!;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: RadioListTile(
+                  title: const Text('Самовывоз'),
+                  value: "PICKUP",
+                  groupValue: _transferType,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _transferType = value!;
+                    });
+                  },
+                ),
+              )
+            ],
           ),
           const SizedBox(height: 10),
           TextFormField(
@@ -126,134 +178,149 @@ class NewOrderFormPageState extends StateMVC {
             textAlignVertical: TextAlignVertical.top,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.alternate_email_outlined),
               hintText: "email",
             ),
             controller: emailController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Содержание пустое";
-              }
-              return null;
-            },
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                "${selectedDate.toLocal()}".split(' ')[0],
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              ElevatedButton(
-                onPressed: () => _selectDate(context), // Refer step 3
-                child: const Text(
-                  'Select date',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.face),
-                hintText: "comment"),
-            // указываем TextEditingController
-            controller: commentController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Заголовок пустой";
+                return null;
               }
               if (value.length < 3) {
-                return "Заголовок должен быть не короче 3 символов";
+                return "Используйте не менее 3 символов";
               }
               return null;
             },
           ),
+          const SizedBox(height: 10),
+          Row(children: [
+            Column(
+              children: [
+                TextButton(
+                    onPressed: () {
+                      DatePicker.showDateTimePicker(context,
+                          showTitleActions: true, onChanged: (date) {
+                        _selectedStartTime = date;
+                      }, onConfirm: (date) {
+                        setState(() {
+                          _selectedStartTime = date;
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.ru);
+                    },
+                    child: Text(
+                      DateFormat('EE, dd MMMM      HH:mm', 'ru_RU')
+                          .format(_selectedStartTime),
+                      style:  TextStyle(color: Colors.blue.shade700, fontSize: 18),
+                    ))
+              ],
+            ),
+            const VerticalDivider(
+              color: Colors.black,
+              thickness: 1,
+            ),
+            Column(
+              children: [
+                TextButton(
+                    onPressed: () {
+                      DatePicker.showDateTimePicker(context,
+                          showTitleActions: true, onChanged: (date) {
+                        _selectedEndTime = date;
+                      }, onConfirm: (date) {
+                        setState(() {
+                          _selectedEndTime = date;
+                        });
+                      }, currentTime: DateTime.now(), locale: LocaleType.ru);
+                    },
+                    child: Text(
+                      DateFormat.Hm('ru_RU').format(_selectedEndTime),
+                      style:  TextStyle(color: Colors.blue.shade700, fontSize: 18),
+                    ))
+              ],
+            ),
+          ]),
+          const SizedBox(height: 10),
           TextFormField(
             decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.face),
-                hintText: "address"),
+                prefixIcon: Icon(Icons.comment),
+                hintText: "Комментарий для доставки"),
+            // указываем TextEditingController
+            controller: commentController,
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.location_on),
+                hintText: "Адрес доставки"),
             controller: addressController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Заголовок пустой";
+                return null;
               }
               if (value.length < 3) {
-                return "Заголовок должен быть не короче 3 символов";
+                return "Используйте не менее 3 символов";
               }
               return null;
             },
           ),
+          const SizedBox(height: 10),
           TextFormField(
             decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.face),
-                hintText: "cost"),
+                prefixIcon: Icon(Icons.money),
+                hintText: "Стоимость доставки"),
             controller: costController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Заголовок пустой";
+                return null;
               }
-              if (value.length < 3) {
-                return "Заголовок должен быть не короче 3 символов";
+              var regExp = RegExp(r'^[0-9]+(\.[0-9]*)?$');
+              if (regExp.matchAsPrefix(value) == null) {
+                return "Используйте только цифры и точку";
               }
               return null;
             },
           ),
+          const SizedBox(height: 10),
           TextFormField(
             decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.face),
-                hintText: "orderComment"),
+                prefixIcon: Icon(Icons.insert_comment_outlined),
+                hintText: "Комментарий к заказу"),
             controller: orderCommentController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Заголовок пустой";
+                return null;
               }
               if (value.length < 3) {
-                return "Заголовок должен быть не короче 3 символов";
+                return "Используйте не менее 3 символов";
               }
               return null;
             },
           ),
+          const SizedBox(height: 10),
           TextFormField(
             decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.face),
-                hintText: "sum"),
+                prefixIcon: Icon(Icons.monetization_on_rounded),
+                hintText: "Сумма заказа"),
             controller: sumController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Заголовок пустой";
+                return null;
               }
-              if (value.length < 3) {
-                return "Заголовок должен быть не короче 3 символов";
+              var regExp = RegExp(r'^[0-9]+(\.[0-9]*)?$');
+              if (regExp.matchAsPrefix(value) == null) {
+                return "Используйте только цифры и точку";
               }
               return null;
             },
           ),
         ],
       ),
-    );
+    ));
   }
 
-  _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate, // Refer step 1
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
+
 }

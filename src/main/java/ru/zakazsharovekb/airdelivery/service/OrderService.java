@@ -8,6 +8,7 @@ import ru.zakazsharovekb.airdelivery.model.dto.OrderDto;
 import ru.zakazsharovekb.airdelivery.model.dto.UpdateOrderDto;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrderService {
@@ -22,7 +23,7 @@ public interface OrderService {
     void deleteOrder(Long id);
 
 
-    List<Order> getAllOrders();
+    List<Order> getOrders(LocalDate startDate);
 
     OrderDto getOrderById(Long id);
 }

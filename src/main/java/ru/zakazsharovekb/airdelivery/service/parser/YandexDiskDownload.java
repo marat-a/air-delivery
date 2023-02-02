@@ -18,7 +18,7 @@ public class YandexDiskDownload {
     static String filename = "Наши миллиардные заказы.xlsx";
     static String urlRequest = "https://cloud-api.yandex.net/v1/disk/resources/download?path=/";
 
-    public static InputStream getFilefromYandexDisk() throws IOException {
+    public static InputStream getFileFromYandexDisk() throws IOException {
 
         WebClient client = WebClient.create();
         Mono<String> responses = client

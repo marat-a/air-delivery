@@ -20,10 +20,10 @@ public class ExcelOrdersParser {
     public List<Order> parseOrdersFromXlsx() throws IOException {
 
         InputStream inputStream;
-        inputStream = YandexDiskDownload.getFilefromYandexDisk();
+        inputStream = YandexDiskDownload.getFileFromYandexDisk();
         Workbook workbook = new XSSFWorkbook(inputStream);
         List<Order> orders = new ArrayList<>();
-        Sheet sheet = workbook.getSheet("Январь 2023");
+        Sheet sheet = workbook.getSheet("Февраль 2023");
 
             for (Row row : sheet) {
                 if (row.getCell(1) != null && isRowNotEmpty(row)) {

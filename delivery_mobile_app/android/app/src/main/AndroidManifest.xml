@@ -11,10 +11,14 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="yandexnavi" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" android:host="api.whatsapp.com"/>
+        </intent>
 
     </queries>
    <application
-        android:label="delivery_mobile_app"
+        android:label="ZakazSharovEkb.RU"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
