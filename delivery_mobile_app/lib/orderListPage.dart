@@ -15,6 +15,7 @@ class OrderListPage extends StatefulWidget {
 class _OrderListPageState extends State<OrderListPage> {
   late Future<List<Order>> futureListOfOrder;
   Repository repo = Repository();
+
   Cards _card(Order order) => Cards(order: order);
 
   @override
@@ -32,37 +33,40 @@ class _OrderListPageState extends State<OrderListPage> {
           useMaterial3: true,
           primarySwatch: Colors.blue,
           textTheme: const TextTheme(
-              bodyText1: TextStyle(fontSize: 18.0, color: Colors.black),
-              bodyText2: TextStyle(fontSize: 16.0, color: Colors.black),
-
-              button: TextStyle(fontSize: 16.0),
+            bodyLarge: TextStyle(fontSize: 36.0, color: Colors.black),
+            bodyMedium: TextStyle(fontSize: 16.0, color: Colors.black),
+            labelLarge: TextStyle(fontSize: 16.0),
           ),
-
         ),
         home: Scaffold(
           appBar:
               AppBar(title: const Text('ЗаказШаровЕКБ.RU'), actions: <Widget>[
-            IconButton(
-                icon: const Icon(Icons.cloud_download),
-                tooltip: 'Спарсить заказы',
-                onPressed: () {
-                  setState(() {
-                    futureListOfOrder = repo.parseOrderFromFile();
+            Builder(builder: (BuildContext context) {
+              return IconButton(
+                  icon: const Icon(Icons.cloud_download),
+                  tooltip: 'Спарсить заказы',
+                  onPressed: () {
+                    setState(() {
+                      futureListOfOrder = repo.parseOrderFromFile();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Парсинг начался')));
                   });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Парсинг начался')));
-                }),
-            IconButton(
-              icon: const Icon(Icons.update),
-              tooltip: 'Обновить заказы',
-              onPressed: () {
-                setState(() {
-                  futureListOfOrder = repo.fetchListOfOrders();
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Обновление началось')));
-              },
-            )
+            }),
+            Builder(builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.update),
+                tooltip: 'Обновить заказы',
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Обновление началось'),
+                      behavior: SnackBarBehavior.floating));
+                  setState(() {
+                    futureListOfOrder = repo.fetchListOfOrders();
+                  });
+                },
+              );
+            })
           ]),
           body: Center(
             child: Padding(

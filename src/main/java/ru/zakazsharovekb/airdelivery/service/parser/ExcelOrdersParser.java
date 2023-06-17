@@ -23,16 +23,16 @@ public class ExcelOrdersParser {
         inputStream = YandexDiskDownload.getFileFromYandexDisk();
         Workbook workbook = new XSSFWorkbook(inputStream);
         List<Order> orders = new ArrayList<>();
-        Sheet sheet = workbook.getSheet("Февраль 2023");
+        Sheet sheet = workbook.getSheet("Май 2023");
 
-            for (Row row : sheet) {
-                if (row.getCell(1) != null && isRowNotEmpty(row)) {
-                    Order order = extractOrderFromRow(row);
-                    System.out.println("New Order: " + order.getDelivery().getDeliveryTime().getStartTime() + " - " + order.getDelivery().getDeliveryTime().getEndTime().toLocalDate());
-                    orders.add(order);
-                }
+        for (Row row : sheet) {
+            if (row.getCell(1) != null && isRowNotEmpty(row)) {
+                Order order = extractOrderFromRow(row);
+                System.out.println("New Order: " + order.getDelivery().getDeliveryTime().getStartTime() + " - " + order.getDelivery().getDeliveryTime().getEndTime().toLocalDate());
+                orders.add(order);
             }
-
+        }
+        inputStream.close();
 
         return orders;
     }

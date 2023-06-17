@@ -45,7 +45,12 @@ class DetailScreenPageState extends State<DetailScreenPage> {
         DateFormat('Hm').format(_order.delivery.deliveryTime.endTime);
     final phone = _order.customer.phone;
 
-    return SelectionArea(
+    return WillPopScope(
+        onWillPop:  () async {
+          Navigator.pop(context, _order);
+          return true;
+        },
+        child: SelectionArea(
         child: Scaffold(
             appBar: AppBar(
               title: const Text('ЗаказШаровЕКБ.RU'),
@@ -62,6 +67,7 @@ class DetailScreenPageState extends State<DetailScreenPage> {
                       if (value is Order) {
                         setState(() {
                           _order = value;
+
                         });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -130,7 +136,7 @@ class DetailScreenPageState extends State<DetailScreenPage> {
                           ElevatedButton(
                             onPressed: () async {
                               String phoneNumber = phone.substring(1);
-                              String message = "Здравствуйте. ";
+                              String message = "Здравствуйте. Это доставка шаров. ";
                               final call = Uri.parse(
                                   "https://wa.me/$phoneNumber?text=$message");
                               if (await canLaunchUrl(call)) {
@@ -226,6 +232,6 @@ class DetailScreenPageState extends State<DetailScreenPage> {
                           ),
                         )
                       ]),
-                    ])))));
+                    ]))))));
   }
 }

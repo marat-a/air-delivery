@@ -4,22 +4,37 @@ import 'package:intl/intl.dart';
 import 'detailScreenPage.dart';
 import 'model/order.dart';
 
-class Cards extends StatelessWidget {
+class Cards extends StatefulWidget {
   final Order order;
 
   const Cards({Key? key, required this.order}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final DateTime startTime = order.delivery.deliveryTime.startTime;
-    final DateTime endTime = order.delivery.deliveryTime.endTime;
-    final String address = order.delivery.address;
+  CardsState createState() => CardsState();
+}
 
-    String printBeforeIfTimeIsMidnight (DateTime startTime) {
-      if (startTime.hour == 0  && startTime.minute == 0) {
+class CardsState extends State<Cards> {
+  late Order _order;
+
+  @override
+  void initState() {
+    super.initState();
+    _order = widget.order;
+  }
+
+  CardsState();
+
+  @override
+  Widget build(BuildContext context) {
+    final DateTime startTime = _order.delivery.deliveryTime.startTime;
+    final DateTime endTime = _order.delivery.deliveryTime.endTime;
+    final String address = _order.delivery.address;
+
+    String printBeforeIfTimeIsMidnight(DateTime startTime) {
+      if (startTime.hour == 0 && startTime.minute == 0) {
         return "до";
       } else {
-        return  "${DateFormat('Hm').format(startTime)} -";
+        return "${DateFormat('Hm').format(startTime)} -";
       }
     }
 
@@ -32,9 +47,7 @@ class Cards extends StatelessWidget {
             child: Row(
               children: [
                 Column(children: [
-                  Text(
-                      DateFormat('dd MMM').format(startTime)
-                  ),
+                  Text(DateFormat('dd MMM').format(startTime)),
                   Text(
                     "${printBeforeIfTimeIsMidnight(startTime)} ${DateFormat('Hm').format(endTime)}",
                   ),
@@ -52,9 +65,15 @@ class Cards extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailScreenPage(order: order),
+              builder: (context) => DetailScreenPage(order: _order),
             ),
-          );
+          ).then((value) {
+            if (value is Order) {
+              setState(() {
+                _order = value;
+              });
+            }
+          });
         },
       ),
     );
