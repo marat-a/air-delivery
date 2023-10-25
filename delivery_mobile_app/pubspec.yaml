@@ -12,7 +12,7 @@ dependencies:
   http:
   flutter_localizations:
     sdk: flutter
-  intl: ^0.18.0
+  intl: ^0.17.0
   flutter_datetime_picker: ^1.5.1
   font_awesome_flutter: ^10.3.0
   url_launcher: ^6.1.7
