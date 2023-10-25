@@ -19,6 +19,7 @@ jobs:
 
       - name: Set up Flutter
         run: flutter pub upgrade
+        working-directory: delivery_mobile_app
 
       - name: Install dependencies
         run: flutter pub get
