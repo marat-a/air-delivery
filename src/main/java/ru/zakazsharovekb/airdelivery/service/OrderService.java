@@ -22,7 +22,6 @@ public interface OrderService {
 
     void deleteOrder(Long id);
 
-
     List<Order> getOrders(LocalDate startDate);
 
     OrderDto getOrderById(Long id);
