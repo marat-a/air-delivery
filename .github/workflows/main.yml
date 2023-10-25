@@ -16,13 +16,13 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v1
         with:
-          flutter-version: '2.5.3' # Укажите нужную версию Flutter
+          flutter-version: '2.5.3'
 
       - name: Install dependencies
-        run: flutter pub get
+        run: delivery_mobile_app/flutter pub get
 
       - name: Build web
-        run: flutter build web --base-href
+        run: delivery_mobile_app/flutter build web --base-href
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
