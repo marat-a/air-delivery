@@ -21,6 +21,9 @@ jobs:
         run: flutter pub upgrade
         working-directory: delivery_mobile_app
 
+      - name: Enable Flutter web
+        run: flutter config --enable-web
+
       - name: Install dependencies
         run: flutter pub get
         working-directory: delivery_mobile_app
