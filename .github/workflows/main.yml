@@ -26,7 +26,7 @@ jobs:
         working-directory: delivery_mobile_app
 
       - name: Build web
-        run: flutter build web
+        run: flutter build web --release --base-href '/air-delivery/'
         working-directory: delivery_mobile_app
 
       - name: Deploy to GitHub Pages
