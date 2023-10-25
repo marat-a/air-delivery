@@ -17,7 +17,7 @@ jobs:
         uses: subosito/flutter-action@v2
       - run: flutter --version
 
-      - name: Set up Flutter
+      - name: Upgrade Flutter
         run: flutter pub upgrade
         working-directory: delivery_mobile_app
 
@@ -26,7 +26,7 @@ jobs:
         working-directory: delivery_mobile_app
 
       - name: Build web
-        run: flutter build web --base-href
+        run: flutter build web --base-href '/air-delivery/'
         working-directory: delivery_mobile_app
 
       - name: Deploy to GitHub Pages
