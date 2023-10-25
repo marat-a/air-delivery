@@ -19,10 +19,12 @@ jobs:
           flutter-version: '2.5.3'
 
       - name: Install dependencies
-        run: delivery_mobile_app/flutter pub get
+        run: flutter pub get
+        working-directory: delivery_mobile_app
 
       - name: Build web
-        run: delivery_mobile_app/flutter build web --base-href
+        run: flutter build web --base-href
+        working-directory: delivery_mobile_app
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
