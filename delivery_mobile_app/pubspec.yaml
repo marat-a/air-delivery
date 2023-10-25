@@ -4,7 +4,7 @@ description: Mobile App for Delivery Service
 version: 1.0.0+1
 
 environment:
-  sdk: '3.0.5'
+  sdk: '>=2.17.6 <3.0.0'
 
 dependencies:
   flutter:
